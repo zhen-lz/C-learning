@@ -11,7 +11,7 @@ struct suffix
 struct suffix expre[MAX];
 int data[MAX];
 char symbol[MAX];
-int Top1, Top2;
+int Top1 = -1, Top2 = -1;
 int sfix = -1;
 int isFull(int n);
 int isEmpty(int n);
@@ -20,6 +20,7 @@ void push_data(int n);
 int pop_data();
 void push_char(char c);
 char pop_char();
+int superior(char temp, char c);
 
 int main()
 {
@@ -40,6 +41,7 @@ int main()
             }
             expre[++sfix].number = temp;
             expre[sfix].symbol = 0;
+            c = input[i];
         }
         else
         {
@@ -62,7 +64,10 @@ int main()
                     while (temp != '(')
                     {
                         expre[++sfix].symbol = temp;
-                        temp = pop_char();
+                        if (isEmpty(Top2))
+                            break;
+                        else
+                            temp = pop_char();
                     }
                 }
                 else
@@ -71,20 +76,50 @@ int main()
                     while (superior(temp, c))
                     {
                         expre[++sfix].symbol = temp;
-                        temp = pop_char();
+                        if (isEmpty(Top2))
+                        {
+                            push_char(temp);
+                            break;
+                        }
+                        else
+                        {
+                            temp = pop_char();
+                        }
                     }
-                    push_char(temp);
-                    push_char(c);
+                    if (isEmpty(Top2))
+                    {
+                        push_char(c);
+                    }
+                    else
+                    {
+                        push_char(temp);
+                        push_char(c);
+                    }
                 }
             }
+            c = input[++i];
         }
     }
+    while (~isEmpty(Top2))
+    {
+        char c;
+        c = pop_char();
+        expre[++sfix].symbol = c;
+    }
+    return 0;
 }
 int superior(char temp, char c)
 {
     if (temp == '(')
         return 0;
     else if (temp == '+' || temp == '-')
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
 }
 int isFull(int n)
 {
@@ -115,6 +150,7 @@ int pop_data()
     if (isEmpty(Top1))
     {
         error("Empty!");
+        return 0;
     }
     else
     {
@@ -137,6 +173,7 @@ char pop_char()
     if (isEmpty(Top2))
     {
         error("Empyt!");
+        return 0;
     }
     else
     {
